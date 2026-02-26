@@ -12,6 +12,14 @@ let users = [
 ];
 let nextId = 4;
 
+function parseUserId(paramId) {
+  const id = parseInt(paramId, 10);
+  if (Number.isNaN(id) || id < 1) {
+    return null;
+  }
+  return id;
+}
+
 /**
  * GET /users
  * Returns all users
@@ -25,9 +33,12 @@ router.get('/', (req, res) => {
  * Returns a single user by ID
  */
 router.get('/:id', (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  const user = users.find((u) => u.id === id);
+  const id = parseUserId(req.params.id);
+  if (id === null) {
+    return res.status(400).json({ error: 'Invalid user ID' });
+  }
 
+  const user = users.find((u) => u.id === id);
   if (!user) {
     return res.status(404).json({ error: `User with id ${id} not found` });
   }
@@ -62,7 +73,10 @@ router.post('/', (req, res) => {
  * Updates an existing user
  */
 router.put('/:id', (req, res) => {
-  const id = parseInt(req.params.id, 10);
+  const id = parseUserId(req.params.id);
+  if (id === null) {
+    return res.status(400).json({ error: 'Invalid user ID' });
+  }
   const index = users.findIndex((u) => u.id === id);
 
   if (index === -1) {
@@ -80,7 +94,10 @@ router.put('/:id', (req, res) => {
  * Deletes a user by ID
  */
 router.delete('/:id', (req, res) => {
-  const id = parseInt(req.params.id, 10);
+  const id = parseUserId(req.params.id);
+  if (id === null) {
+    return res.status(400).json({ error: 'Invalid user ID' });
+  }
   const index = users.findIndex((u) => u.id === id);
 
   if (index === -1) {
